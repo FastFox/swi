@@ -104,7 +104,7 @@ function [x,fx] = ABC(CS,D,its)
     x = x_best;
     fx = f(x);
     %fnx = fitness(x);
-
+		fgeneric('finalize');
 
 end
 
