@@ -84,7 +84,8 @@ function [x,fx] = ABC(CS,D,its)
         %scouts
         for i = 1:n_employed
             if (counter(i) > L)
-                X(:,1) = rand(D,1);
+                %X(:,1) = rand(D,1);
+                                X(:,i) = rand(D,1);
             end
         end
         
