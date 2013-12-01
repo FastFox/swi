@@ -25,7 +25,7 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
     n_employed = CS / 2; % number of empoyed bees
     n_onlookers = n_employed; % number of onlookers
     L = CS * D / 2; % limit: the maximum amount of evaluations allowed before becoming scout
-    X = rand(D,n_employed) * 10 - 5; % random initial food sources
+    X = rand(D,n_employed) * 8 - 4; % random initial food sources "Most function have their global optimum in [-4,4]^D which can be a reasonable setting for initial solutions."
     fit = zeros(1,n_employed); % the fitness of food sources
     counter = zeros(1,n_employed); % evaluation counter for each EB 
    	eval_count = 1; % Counter to keep track of amount of evaluation
@@ -101,7 +101,7 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 					breakOut = true;
 					break;
 				end
-                X(:,i) = rand(D,1);
+                X(:,i) = rand(D,1) * 8 - 4;
                 fit(i) = f(X(:,i));
                 eval_count = eval_count + 1;
             end
