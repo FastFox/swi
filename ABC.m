@@ -1,17 +1,15 @@
-%function [x,fx] = ABC(func_id,CS,D,eval_budget)
 function [x,fx] = ABC(func_id,CS,D,eval_budget)
-% Artificial Bee Colony optimization algorithm
-% Runs the algorithms with colony size CS for the
-% D-dimensional problem for ITS iterations and returns
-%	X: the best solution found
-%	FX: the value of f(X) (function to be optimized)
+    % Artificial Bee Colony optimization algorithm
+    % Runs the algorithms with colony size CS for the
+    % D-dimensional problem with eval_budget evaluations and returns
+    %   x: the best solution found
+    %	fx: the value of f(X) (function to be optimized)
 
 	% BBOB settings
-	datapath = 'PUT_MY_BBOB_DATA_PATH';
+	datapath = 'bbob_data_pah';
 	opt.algName = 'ABC';
-	opt.comments = 'PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC';
-	%func_id = 1;
-	instance_id = 1;
+	opt.comments = 'Func: ' + num2str(func_id) + ', CS: ' + num2str(CS) + ', eval_budget: ' + num2str(eval_budget);
+	instance_id = 1; % We only use the first instance of a function
 	fgeneric('initialize', func_id, instance_id, datapath, opt);
 	
 	%	FUNC_ID is an integer setting the fitness function to be evaluated.
@@ -31,13 +29,14 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 	eval_count = 1; % Counter to keep track of amount of evaluation
 	breakOut = false; % Stop process when eval_budget is is reached
 
+    % The employed bees are randomly initialized and here evaluated
 	for i = 1:n_employed
 		fit(i) = f(X(:,i));
 		eval_count = eval_count + 1;
 	end
 	[fx,x] = min(fit); 
 
-	
+	% Only use so much evaluations as we have. 
 	while eval_count < eval_budget
 		
 		% Phase 1: employed foragers
@@ -47,6 +46,8 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 			V = X(:,i);
 			V(j) = X(j,i) + phi(X(j,i) - X(j,k)); % mutate solution
 			V(j) = max(-5, min(5, V(j)));
+            
+            % If we have evalautions left
 			if eval_count == eval_budget
 				breakOut = true;
 				break;
@@ -62,7 +63,7 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 			end
 		end
 				
-		if breakOut
+		if breakOut % No evaluations left
 			break;
 		end
 		
@@ -75,6 +76,8 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 			V = X(:,i);
 			V(j) = X(j,i) + phi(X(j,i) - X(j,k)); 
 			V(j) = max(-5, min(5, V(j)));
+            
+            % If we have evalautions left
 			if eval_count == eval_budget
 				breakOut = true;
 				break;
@@ -88,15 +91,16 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 			else
 				counter(i) = counter(i) + 1;
 			end
-		end
+        end
 
-	  	if breakOut
-			break;
-		end  
+        if breakOut % No evaluations left
+            break;
+        end  
 
 		% Phase 3: scouts
 		for i = 1:n_employed
 			if (counter(i) > L)
+                % If we have evalautions left
 				if eval_count == eval_budget
 					breakOut = true;
 					break;
@@ -126,6 +130,7 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 end
 
 function y = f(x)
+    % Function from the bbob benchmark
 	y = fgeneric(x);
 end
 
