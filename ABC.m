@@ -28,12 +28,15 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
     X = rand(D,n_employed) * 10 - 5; % random initial food sources
     fit = zeros(1,n_employed); % the fitness of food sources
     counter = zeros(1,n_employed); % evaluation counter for each EB 
-    
+   	eval_count = 1; % Counter to keep track of amount of evaluation
+		breakOut = false; % Stop process when eval_budget is is reached
+
     for i = 1:n_employed
         fit(i) = f(X(:,i));
+				eval_count = eval_count + 1;
     end
     [fx,x] = min(fit); 
-    eval_count = n_employed; % counter to keep track amount of evaluations
+
     
     while eval_count < eval_budget
         
@@ -44,7 +47,12 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
             V = X(:,i);
             V(j) = X(j,i) + phi(X(j,i) - X(j,k)); % mutate solution
             V(j) = max(-5, min(5, V(j)));
+			if eval_count == eval_budget
+				breakOut = true;
+				break;
+			end
             fitnessEvaluated = f(V);
+            eval_count = eval_count + 1;
             if (fitnessEvaluated < fit(i))
                 X(:,i) = V;
                 fit(i) = fitnessEvaluated;
@@ -52,8 +60,11 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
             else
                 counter(i) = counter(i) + 1;
             end
-            eval_count = eval_count + 1;
         end
+				
+        if breakOut
+            break;
+		end
         
         % Phase 2: onlookers
         for o = 1:n_onlookers
@@ -64,8 +75,12 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
             V = X(:,i);
             V(j) = X(j,i) + phi(X(j,i) - X(j,k)); 
             V(j) = max(-5, min(5, V(j)));
-
+			if eval_count == eval_budget
+				breakOut = true;
+            	break;
+			end
             fitnessEvaluated = f(V);
+            eval_count = eval_count + 1;
             if (fitnessEvaluated < fit(i))
                 X(:,i) = V;
                 fit(i) = fitnessEvaluated;
@@ -73,12 +88,47 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
             else
                 counter(i) = counter(i) + 1;
             end
-            eval_count = eval_count + 1;
         end
         
+		if breakOut
+			break;
+		end
+        
+        % Phase 2: onlookers
+        for o = 1:n_onlookers
+            i = tournament_selection(fit); % select an EB  
+            
+            j = randi(D); 
+            k = randi(n_employed); 
+            V = X(:,i);
+            V(j) = X(j,i) + phi(X(j,i) - X(j,k)); 
+            V(j) = max(-5, min(5, V(j)));
+			if eval_count == eval_budget
+				breakOut = true;
+				break;
+			end
+            fitnessEvaluated = f(V);
+            eval_count = eval_count + 1;
+            if (fitnessEvaluated < fit(i))
+                X(:,i) = V;
+                fit(i) = fitnessEvaluated;
+                counter(i) = 0;
+            else
+                counter(i) = counter(i) + 1;
+            end
+        end
+
+      	if breakOut
+			break;
+		end  
+
         % Phase 3: scouts
         for i = 1:n_employed
             if (counter(i) > L)
+    			if eval_count == eval_budget
+					breakOut = true;
+					break;
+				end
                 X(:,i) = rand(D,1);
                 fit(i) = f(X(:,i));
                 eval_count = eval_count + 1;
@@ -104,9 +154,9 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 end
 
 function y = f(x)
-   y = fgeneric(x);
+	y = fgeneric(x);
 end
 
 function y = phi(x)
-    y = x * ((rand() * 2) - 1);
+	y = x * ((rand() * 2) - 1);
 end
