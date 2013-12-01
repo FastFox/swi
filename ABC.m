@@ -64,35 +64,7 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 				
         if breakOut
             break;
-		end
-        
-        % Phase 2: onlookers
-        for o = 1:n_onlookers
-            i = tournament_selection(fit); % select an EB  
-            
-            j = randi(D); 
-            k = randi(n_employed); 
-            V = X(:,i);
-            V(j) = X(j,i) + phi(X(j,i) - X(j,k)); 
-            V(j) = max(-5, min(5, V(j)));
-			if eval_count == eval_budget
-				breakOut = true;
-            	break;
-			end
-            fitnessEvaluated = f(V);
-            eval_count = eval_count + 1;
-            if (fitnessEvaluated < fit(i))
-                X(:,i) = V;
-                fit(i) = fitnessEvaluated;
-                counter(i) = 0;
-            else
-                counter(i) = counter(i) + 1;
-            end
         end
-        
-		if breakOut
-			break;
-		end
         
         % Phase 2: onlookers
         for o = 1:n_onlookers
