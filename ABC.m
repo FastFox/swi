@@ -6,6 +6,9 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
 %    X: the best solution found
 %    FX: the value of f(X) (function to be optimized)
 
+		% Random should be always random
+		rng('shuffle');
+
     % BBOB settings
     datapath = 'PUT_MY_BBOB_DATA_PATH';
     opt.algName = 'ABC';
