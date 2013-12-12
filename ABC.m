@@ -4,6 +4,9 @@ function [x,fx] = ABC(func_id,CS,D,eval_budget)
     % D-dimensional problem with eval_budget evaluations and returns
     %   x: the best solution found
     %	fx: the value of f(X) (function to be optimized)
+	% Lai-yee Liu
+	% Umut Özaydin
+	% Michiel Vos
 
 	% BBOB settings
 	datapath = 'bbob_data_pah';
